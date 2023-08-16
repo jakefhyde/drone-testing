@@ -1,7 +1,85 @@
 ---
 kind: pipeline
 type: docker
-name: amd64
+name: lint
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: lint
+    image: rancher/dapper:v0.6.0
+    commands:
+      - dapper test
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      event:
+        - pull_request
+        - custom
+        - promote
+  - name: env
+    image: busybox
+    commands:
+      - env
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      event:
+        - pull_request
+        - custom
+        - promote
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  event:
+    - pull_request
+    - custom
+    - promote
+---
+kind: pipeline
+type: docker
+name: build-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: build
+    image: rancher/dapper:v0.6.0
+    commands:
+      - dapper build
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
+    when:
+      event:
+        - promote
+      target:
+        - ci
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  event:
+    - promote
+  target:
+    - ci
+---
+kind: pipeline
+type: docker
+name: test-amd64
 
 platform:
   os: linux
@@ -17,19 +95,30 @@ steps:
         path: /var/run/docker.sock
     when:
       event:
-        - pull_request
+        - promote
+      target:
+        - ci
 
-  - name: build
-    image: rancher/dapper:v0.6.0
-    commands:
-      - dapper build
-    volumes:
-      - name: docker
-        path: /var/run/docker.sock
-    when:
-      event:
-        - pull_request
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
 
+trigger:
+  event:
+    - promote
+  target:
+    - ci
+---
+kind: pipeline
+type: docker
+name: e2e-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
   - name: e2e
     image: rancher/dapper:v0.6.0
     commands:
@@ -41,4 +130,15 @@ steps:
       event:
         - promote
       target:
-        - e2e
+        - ci
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  event:
+    - promote
+  target:
+    - ci
