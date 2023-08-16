@@ -42,3 +42,8 @@ steps:
         - promote
       target:
         - e2e
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
