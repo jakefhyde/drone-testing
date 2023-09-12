@@ -14,6 +14,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: /test
+          direction: last
       - id: set-testcases
         run: echo "testcases=$(echo ${{ steps.find-comment.outputs.comment-body }} | awk '{print $2}')" >> $GITHUB_OUTPUT
   test-job:
