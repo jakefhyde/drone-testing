@@ -7,7 +7,7 @@ jobs:
     if: ${{ github.event.issue.pull_request }} && ${{ startsWith(github.event.comment.body, '/test') }}
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - name: add label
         uses: actions-ecosystem/action-add-labels@v1
