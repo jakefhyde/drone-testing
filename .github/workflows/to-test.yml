@@ -14,4 +14,5 @@ jobs:
         if: ${{ startsWith(github.event.comment.body, '/test') }}
         with:
           labels: to-test
+          github-token: ${{ secrets.PAT }}
       
