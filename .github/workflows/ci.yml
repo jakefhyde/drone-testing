@@ -10,7 +10,7 @@ jobs:
       testcases: ${{ steps.set-testcases.outputs.testcases }}
     steps:
       - id: set-testcases
-        run: echo "testcases=$(echo ${{ github.event.comment.body }} | awk '{print $2}')"
+        run: echo "testcases=$(echo ${{ github.event.comment.body }} | awk '{print $2}')" >> $GITHUB_OUTPUT
   test-job:
     if: ${{ github.event.issue.pull_request }}
     needs: setup
