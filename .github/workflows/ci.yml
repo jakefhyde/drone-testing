@@ -15,7 +15,6 @@ jobs:
           body-includes: /test
       - id: set-testcases
         run: echo "testcases=$(echo ${{ steps.find-comment.outputs.comment-body }} | awk '{print $2}')" >> $GITHUB_OUTPUT
-    
   test-job:
     needs: setup
     runs-on: ubuntu-latest
