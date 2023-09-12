@@ -12,7 +12,7 @@ jobs:
       - id: find-comment
         uses: peter-evans/find-comment@v2.4.0
         with:
-          issue-number: ${{ github.event.issue.number }}
+          issue-number: ${{ github.event.pull_request.number }}
           body-includes: /test
       - id: set-testcases
         run: echo "testcases=$(echo ${{ steps.find-comment.outputs.comment-body }} | awk '{print $2}')" >> $GITHUB_OUTPUT
