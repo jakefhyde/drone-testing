@@ -1,0 +1,31 @@
+name: ci
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+jobs:
+  setup:
+    if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/test') }}
+    runs-on: ubuntu-latest
+    outputs:
+      testcases: ${{ steps.set-testcases.outputs.testcases }}
+    steps:
+      - id: set-testcases
+        run: echo "testcases=$(echo ${{ github.event.comment.body }} | awk '{print $2}')"
+  test-job:
+    if: ${{ github.event.issue.pull_request }}
+    needs: setup
+    runs-on: ubuntu-latest
+    container: 
+      image: rancher/dapper:v0.6.0
+      env:
+        TESTCASES: ${{ needs.setup.outputs.testcases }}
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+    steps:
+      - name: build
+        run: dapper build
+      - name: test
+        run: dapper test
+      - name: e2e
+        run: dapper e2e
+      
