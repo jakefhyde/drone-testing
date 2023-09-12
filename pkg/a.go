@@ -3,5 +3,5 @@ package pkg
 import "log"
 
 func A() {
-	log.Println("Drone Testing!!")
+	log.Println("Drone Testing!!!")
 }
