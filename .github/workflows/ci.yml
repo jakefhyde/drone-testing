@@ -1,18 +1,22 @@
 name: ci
 on:
-  issue_comment:
-    types: [created, edited, deleted]
+  pull_request:
+    types: [labeled]
 jobs:
   setup:
-    if: ${{ github.event.issue.pull_request }} && ${{ contains(github.event.comment.body, '/test') }}
+    if: ${{ github.event.label.name == 'to-test' }} 
     runs-on: ubuntu-latest
     outputs:
       testcases: ${{ steps.set-testcases.outputs.testcases }}
     steps:
+      - id: find-comment
+        uses: peter-evans/find-comment@v2.4.0
+        with:
+          body-includes: /test
       - id: set-testcases
-        run: echo "testcases=$(echo ${{ github.event.comment.body }} | awk '{print $2}')" >> $GITHUB_OUTPUT
+        run: echo "testcases=$(echo ${{ steps.find-comment.outputs.comment-body }} | awk '{print $2}')" >> $GITHUB_OUTPUT
+    
   test-job:
-    if: ${{ github.event.issue.pull_request }}
     needs: setup
     runs-on: ubuntu-latest
     container: 
